@@ -23,5 +23,20 @@ def connect_db():
 	rv.row_factory = sqlite3.Row 
 	return rv
 
+def get_db():
+	'''Opens a new database connection if there is none yet for the
+	current application context.'''
+	if not hasattr(g, 'sqlite_db'):
+		g.sqlite_db = conect_db()
+	return g.sqlite_db
+
+@app.teardown_appconext
+def close_db(error):
+	'''Closes the database again at the end of the request.'''
+	if hasattr(g, 'sqlite_db'):
+		g.sqlite_db.close()
+	'''Functions marked with teardown_appcontext() are
+	 called every time the app context tears down.'''
+
 if __name__ == '__main__':
 	app.run()
